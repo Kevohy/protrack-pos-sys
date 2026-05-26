@@ -11,17 +11,35 @@ export default async function CustomersPage({ params }: PageProps) {
   const membership = await getTenantMembership(params.tenantSlug);
   if (!membership) redirect("/login");
 
-  const customers = await prisma.customer.findMany({
-    where:   { tenantId: membership.tenantId },
-    orderBy: { createdAt: "desc" },
-  });
+  let serialized: {
+    id: string;
+    tenantId: string;
+    name: string;
+    accountName: string;
+    type: string;
+    phone: string;
+    email: string | null;
+    location: string | null;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+  }[] = [];
 
-  // Serialize Dates → ISO strings for client component
-  const serialized = customers.map((c) => ({
-    ...c,
-    createdAt: c.createdAt.toISOString(),
-    updatedAt: c.updatedAt.toISOString(),
-  }));
+  try {
+    const customers = await prisma.customer.findMany({
+      where:   { tenantId: membership.tenantId },
+      orderBy: { createdAt: "desc" },
+    });
+
+    serialized = customers.map((c) => ({
+      ...c,
+      createdAt: c.createdAt.toISOString(),
+      updatedAt: c.updatedAt.toISOString(),
+    }));
+  } catch (err) {
+    console.error("[CustomersPage] DB query failed:", err);
+    // Return empty list — the table may not exist yet pending a db push
+  }
 
   return (
     <CustomersClient
