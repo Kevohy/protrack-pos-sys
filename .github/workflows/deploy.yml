@@ -39,7 +39,7 @@ jobs:
           script: |
             cd /opt/pos-saas
             git pull origin main
-            npm ci --production
+            npm ci
             npx prisma db push
             npx prisma generate
             npm run build
