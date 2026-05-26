@@ -16,10 +16,11 @@ model Tenant {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users     TenantUser[]
-  products  Product[]
-  sales     Sale[]
+  users      TenantUser[]
+  products   Product[]
+  sales      Sale[]
   categories Category[]
+  customers  Customer[]
 
   @@map("tenants")
 }
@@ -186,6 +187,27 @@ model Sale {
   updatedAt DateTime @updatedAt
 
   @@map("sales")
+}
+
+// ─── Customers ────────────────────────────────────────────────────────────────
+
+model Customer {
+  id          String   @id @default(cuid())
+  tenantId    String
+  name        String
+  accountName String
+  type        String   // "End User" | "Distributor" | "Company"
+  phone       String
+  email       String?
+  location    String?
+  status      String   @default("Active") // "Active" | "Inactive"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, accountName])
+  @@map("customers")
 }
 
 model SaleItem {
