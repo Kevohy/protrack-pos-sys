@@ -42,8 +42,12 @@ export async function GET(_req: NextRequest, { params }: RouteParams) {
 
     if (!customer) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json({ data: customer });
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "";
+    if (msg === "UNAUTHORIZED") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (msg === "FORBIDDEN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    console.error("[customers GET]", err);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
 
@@ -138,7 +142,11 @@ export async function DELETE(_req: NextRequest, { params }: RouteParams) {
     });
 
     return NextResponse.json({ data: customer });
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "";
+    if (msg === "UNAUTHORIZED") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (msg === "FORBIDDEN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    console.error("[customers DELETE]", err);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
