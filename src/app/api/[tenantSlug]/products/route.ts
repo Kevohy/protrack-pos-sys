@@ -55,10 +55,11 @@ export async function POST(
     });
 
     return NextResponse.json({ data: product }, { status: 201 });
-  } catch (err: any) {
-    if (err.message === "FORBIDDEN") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "";
+    if (msg === "FORBIDDEN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (msg === "UNAUTHORIZED") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    console.error("[products POST]", err);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

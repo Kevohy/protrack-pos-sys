@@ -2,7 +2,7 @@ import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
 export default withAuth(
-  function middleware(req) {
+  function middleware(_req) {
     return NextResponse.next();
   },
   {
@@ -14,6 +14,6 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    "/((?!api/auth|login|register|_next/static|_next/image|favicon.ico).*)",
+    "/((?!api/auth|api/health|login|register|_next/static|_next/image|favicon.ico).*)",
   ],
 };

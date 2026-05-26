@@ -26,9 +26,12 @@ export async function GET(
     });
 
     return NextResponse.json({ data: users });
-  } catch (err: any) {
-    if (err.message === "FORBIDDEN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "";
+    if (msg === "FORBIDDEN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (msg === "UNAUTHORIZED") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    console.error("[users GET]", err);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
 
@@ -68,8 +71,11 @@ export async function POST(
     });
 
     return NextResponse.json({ data: tenantUser }, { status: 201 });
-  } catch (err: any) {
-    if (err.message === "FORBIDDEN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "";
+    if (msg === "FORBIDDEN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (msg === "UNAUTHORIZED") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    console.error("[users POST]", err);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

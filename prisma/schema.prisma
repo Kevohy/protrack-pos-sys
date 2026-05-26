@@ -51,20 +51,22 @@ enum Role {
 }
 
 model TenantUser {
-  id       String @id @default(cuid())
-  role     Role   @default(CASHIER)
+  id       String  @id @default(cuid())
+  role     Role    @default(CASHIER)
   isActive Boolean @default(true)
 
   tenantId String
   userId   String
 
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([tenantId, userId])
+  @@index([tenantId])
+  @@index([userId])
   @@map("tenant_users")
 }
 
@@ -87,6 +89,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
   @@map("accounts")
 }
 
@@ -98,6 +101,7 @@ model Session {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@map("sessions")
 }
 
@@ -124,6 +128,7 @@ model Category {
   updatedAt DateTime @updatedAt
 
   @@unique([tenantId, name])
+  @@index([tenantId])
   @@map("categories")
 }
 
@@ -149,6 +154,8 @@ model Product {
   updatedAt DateTime @updatedAt
 
   @@unique([tenantId, sku])
+  @@index([tenantId])
+  @@index([tenantId, isActive])
   @@map("products")
 }
 
@@ -177,8 +184,8 @@ model Sale {
   status        SaleStatus    @default(COMPLETED)
   note          String?
 
-  tenantId   String
-  cashierId  String
+  tenantId  String
+  cashierId String
 
   tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   saleItems SaleItem[]
@@ -186,6 +193,9 @@ model Sale {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([tenantId])
+  @@index([tenantId, createdAt])
+  @@index([cashierId])
   @@map("sales")
 }
 
@@ -207,6 +217,9 @@ model Customer {
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, accountName])
+  @@index([tenantId])
+  @@index([tenantId, type])
+  @@index([tenantId, status])
   @@map("customers")
 }
 
@@ -222,5 +235,7 @@ model SaleItem {
   sale    Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id])
 
+  @@index([saleId])
+  @@index([productId])
   @@map("sale_items")
 }
