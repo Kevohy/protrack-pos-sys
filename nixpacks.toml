@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["nodejs_20"]
+nixPkgs = ["nodejs_20", "openssl"]
 
 [phases.install]
 cmds = ["npm ci"]
@@ -11,8 +11,11 @@ cmds = [
 ]
 
 [start]
+# Push schema (idempotent) then start. DATABASE_URL is injected at runtime.
 cmd = "npx prisma db push --accept-data-loss && npm start"
 
 [variables]
-NODE_ENV = "production"
+NODE_ENV            = "production"
 NEXT_TELEMETRY_DISABLED = "1"
+# NEXTAUTH_URL and NEXTAUTH_SECRET must be set as runtime env vars in Coolify.
+# They are NOT set here to avoid baking secrets into the build image.
