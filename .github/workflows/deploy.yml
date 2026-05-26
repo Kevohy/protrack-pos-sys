@@ -40,7 +40,7 @@ jobs:
             cd /opt/pos-saas
             git pull origin main
             npm ci --production
-            npx prisma migrate deploy
+            npx prisma db push
             npx prisma generate
             npm run build
             pm2 restart pos-saas || pm2 start npm --name "pos-saas" -- start
