@@ -5,12 +5,16 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatCurrency(amount: number | string | { toNumber: () => number }) {
+export function formatKES(amount: number | string | { toNumber: () => number }) {
   const num = typeof amount === "object" ? amount.toNumber() : Number(amount);
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(num);
+  return `KES ${num.toLocaleString("en-KE", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
+export function formatCurrency(amount: number | string | { toNumber: () => number }) {
+  return formatKES(amount);
 }
 
 export function slugify(text: string) {
